@@ -1,7 +1,7 @@
 var UI = require('sketch/ui');
 var Document = require('sketch/dom').Document;
 var Shape = require('sketch/dom').Shape;
-var Rectangle = require('sketch/dom').Rectangle
+var Rectangle = require('sketch/dom').Rectangle;
 
 // also exposed on Document
 
@@ -46,9 +46,10 @@ export default function() {
     name: 'my shape',
     frame: frame,
     style: {
-      fills: ['#4A90E2']
+      fills: ['#5F5BC2']
     }
   });
+  UI.message(shape.id);
 
   var pageLayers = page.layers.map(function(item) {
     return item.sketchObject;

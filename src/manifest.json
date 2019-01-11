@@ -4,15 +4,25 @@
   "icon": "icon.png",
   "commands": [
     {
-      "name": "my-command",
-      "identifier": "my-command-identifier",
-      "script": "./my-command.js"
+      "name": "Square Reqular Translation",
+      "identifier": "square-regular-translation",
+      "script": "./square-regular-translation.js"
+    },
+    {
+      "script": "./my-action-listener.js",
+      "name": "My Action Listener",
+      "handlers": {
+        "actions": {
+          "SelectionChanged.begin": "onActionHandler"
+        }
+      },
+      "indentifier": "my-action-listenr-identifier"
     }
   ],
   "menu": {
-    "title": "my-plugin",
+    "title": "Tesselation",
     "items": [
-      "my-command-identifier"
+      "square-regular-translation"
     ]
   }
 }

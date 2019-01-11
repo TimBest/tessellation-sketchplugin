@@ -86,76 +86,42 @@ var exports =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/my-command.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/my-action-listener.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/my-command.js":
-/*!***************************!*\
-  !*** ./src/my-command.js ***!
-  \***************************/
-/*! exports provided: default */
+/***/ "./src/my-action-listener.js":
+/*!***********************************!*\
+  !*** ./src/my-action-listener.js ***!
+  \***********************************/
+/*! exports provided: onActionHandler */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onActionHandler", function() { return onActionHandler; });
 var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
 var Document = __webpack_require__(/*! sketch/dom */ "sketch/dom").Document;
 
-var Shape = __webpack_require__(/*! sketch/dom */ "sketch/dom").Shape;
+function onActionHandler(context) {
+  // UI.alert("title", context);
+  var oldSelection = context.actionContext.oldSelection;
+  var name = oldSelection[0].name();
 
-var Rectangle = __webpack_require__(/*! sketch/dom */ "sketch/dom").Rectangle; // also exposed on Document
-// function getSelectedArtboards() {
-//   var document = Document.getSelectedDocument();
-//   var page = document.selectedPage;
-//   var selectedLayers = document.selectedLayers;
-//   var selectedCount = selectedLayers.length;
-//
-//   if (selectedCount === 0) {
-//     return [];
-//   }
-//
-//   var artboards = [];
-//   selectedLayers.forEach(function(layer) {
-//     if (layer.type === "Artboard") {
-//       artboards.push(layer);
-//     }
-//   });
-//   return artboards;
-// }
-// var artboards = getSelectedArtboards();
-//
-// if (artboards.length === 0) {
-//   UI.message('No Artboard selected');
-//   return;
-// }
-//
-// if (artboards.length > 1) {
-//   UI.message('Too many Artboards selected. Select a single Artboard');
-//   return;
-// }
-//
-// var artboard = artboards[0];
+  if (name != 'my shape') {
+    UI.message("object ".concat(name, " not named my shape"));
+    return;
+  }
 
-
-/* harmony default export */ __webpack_exports__["default"] = (function () {
   var document = Document.getSelectedDocument();
-  var page = document.selectedPage;
-  var frame = new Rectangle(0, 0, 100, 100);
-  var shape = new Shape({
-    name: 'my shape',
-    frame: frame,
-    style: {
-      fills: ['#4A90E2']
-    }
-  });
-  var pageLayers = page.layers.map(function (item) {
-    return item.sketchObject;
-  });
-  page.layers = pageLayers.concat(shape);
-});
+  var layers = document.getLayersNamed(name);
+  UI.alert("layers", layers[0].style.LineEnd); // UI.alert("layers", layers[0].name)
+  // check if layers is length 1 and that selection is a tesselation layer
+  // upldae layer with changes so that it can tessellate
+  // context.actionContext.document.showMessage('edit?')
+}
 
 /***/ }),
 
@@ -188,6 +154,7 @@ module.exports = require("sketch/ui");
     exports[key](context);
   }
 }
+that['onActionHandler'] = __skpm_run.bind(this, 'onActionHandler');
 that['onRun'] = __skpm_run.bind(this, 'default')
 
-//# sourceMappingURL=my-command.js.map
+//# sourceMappingURL=my-action-listener.js.map
