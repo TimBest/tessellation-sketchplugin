@@ -7,3 +7,8 @@ export function svgPathToBezierPath(svgPath) {
         isClosed: isClosedPtr.value()
     };
 }
+
+export function getParentGroup(document) {
+  var documentData = document.documentData();
+  return documentData.currentPage().currentArtboard() || documentData.currentPage();
+}

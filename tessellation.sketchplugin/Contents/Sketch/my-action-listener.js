@@ -107,6 +107,30 @@ var Utils = __webpack_require__(/*! ./utils */ "./src/utils.js");
 
 var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
+function MSRectToSVGCommands(rect) {
+  var x = rect.x();
+  var y = rect.y();
+  var w = rect.width();
+  var h = rect.height();
+  return "M ".concat(x, " ").concat(y, " h ").concat(w, " v ").concat(h, " H ").concat(x, " z");
+}
+
+function squarePath(svgPath) {
+  var name = 'boundingbox';
+  var bezierPath = Utils.svgPathToBezierPath(svgPath).path;
+  var shape = MSShapeGroup.shapeWithBezierPath(bezierPath);
+  shape.setName(name); // `0` constant indicates that we need a `fill` part to be created
+
+  var fill = shape.style().addStylePartOfType(0);
+  fill.color = MSColor.colorWithRGBADictionary({
+    r: 0,
+    g: 0.8,
+    b: 0.4,
+    a: 1
+  });
+  return shape;
+}
+
 function onActionHandler(context) {
   var oldSelection = context.actionContext.oldSelection;
   var name = oldSelection[0].name();
@@ -118,8 +142,18 @@ function onActionHandler(context) {
   // oldSelection[0].setName('trianlge');
 
 
-  var path = oldSelection[0].bezierPath().svgPathAttribute();
-  UI.alert("title", Settings.settingForKey('tesselations')); // UI.alert("title", shape);
+  var newPath = oldSelection[0].bezierPath().svgPathAttribute();
+  var oldPath = Settings.settingForKey('tesselations').path;
+
+  if (newPath == oldPath) {
+    return;
+  }
+
+  var boundingBox = MSRectToSVGCommands(oldSelection[0].frame());
+  var currentParentGroup = Utils.getParentGroup(context.actionContext.document); // removeLayer
+
+  currentParentGroup.addLayers([squarePath(boundingBox)]);
+  currentParentGroup.removeLayer(oldPath[0]); // UI.alert("title", shape);
   // var document = Document.getSelectedDocument();
   // var layers = document.getLayersNamed(name);
   // UI.alert("layers", layers[0]);
@@ -134,12 +168,13 @@ function onActionHandler(context) {
 /*!**********************!*\
   !*** ./src/utils.js ***!
   \**********************/
-/*! exports provided: svgPathToBezierPath */
+/*! exports provided: svgPathToBezierPath, getParentGroup */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "svgPathToBezierPath", function() { return svgPathToBezierPath; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getParentGroup", function() { return getParentGroup; });
 function svgPathToBezierPath(svgPath) {
   var isClosedPtr = MOPointer.alloc().init();
   var path = SVGPathInterpreter.bezierPathFromCommands_isPathClosed(svgPath, isClosedPtr);
@@ -147,6 +182,10 @@ function svgPathToBezierPath(svgPath) {
     path: path,
     isClosed: isClosedPtr.value()
   };
+}
+function getParentGroup(document) {
+  var documentData = document.documentData();
+  return documentData.currentPage().currentArtboard() || documentData.currentPage();
 }
 
 /***/ }),

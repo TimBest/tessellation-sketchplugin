@@ -110,8 +110,8 @@ function squarePath() {
   var name = 'testName';
   var svgPath = "M0,0L100 0 100 100 0 100z";
   Settings.setSettingForKey('tesselations', {
-    svgPath: svgPath,
-    name: name
+    name: name,
+    path: svgPath
   });
   var bezierPath = Utils.svgPathToBezierPath(svgPath).path;
   var shape = MSShapeGroup.shapeWithBezierPath(bezierPath);
@@ -129,8 +129,7 @@ function squarePath() {
 
 /* harmony default export */ __webpack_exports__["default"] = (function (context) {
   var shape = squarePath();
-  var documentData = context.document.documentData();
-  var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage();
+  var currentParentGroup = Utils.getParentGroup(context.document);
   currentParentGroup.addLayers([shape]);
 });
 
@@ -140,12 +139,13 @@ function squarePath() {
 /*!**********************!*\
   !*** ./src/utils.js ***!
   \**********************/
-/*! exports provided: svgPathToBezierPath */
+/*! exports provided: svgPathToBezierPath, getParentGroup */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "svgPathToBezierPath", function() { return svgPathToBezierPath; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getParentGroup", function() { return getParentGroup; });
 function svgPathToBezierPath(svgPath) {
   var isClosedPtr = MOPointer.alloc().init();
   var path = SVGPathInterpreter.bezierPathFromCommands_isPathClosed(svgPath, isClosedPtr);
@@ -153,6 +153,10 @@ function svgPathToBezierPath(svgPath) {
     path: path,
     isClosed: isClosedPtr.value()
   };
+}
+function getParentGroup(document) {
+  var documentData = document.documentData();
+  return documentData.currentPage().currentArtboard() || documentData.currentPage();
 }
 
 /***/ }),

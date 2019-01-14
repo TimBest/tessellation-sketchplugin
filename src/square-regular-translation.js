@@ -8,7 +8,10 @@ function squarePath() {
   var svgPath = "M0,0L100 0 100 100 0 100z";
   Settings.setSettingForKey(
     'tesselations',
-    {svgPath, name}
+    {
+      name,
+      path: svgPath
+    }
   );
 
   var bezierPath = Utils.svgPathToBezierPath(svgPath).path;
@@ -22,8 +25,6 @@ function squarePath() {
 
 export default function(context) {
   var shape = squarePath();
-  var documentData = context.document.documentData();
-  var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage();
-
+  var currentParentGroup = Utils.getParentGroup(context.document);
   currentParentGroup.addLayers([shape]);
 }
