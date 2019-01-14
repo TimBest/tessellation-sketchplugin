@@ -16,11 +16,11 @@
           "SelectionChanged.begin": "onActionHandler"
         }
       },
-      "indentifier": "my-action-listenr-identifier"
+      "indentifier": "my-action-listener"
     }
   ],
   "menu": {
-    "title": "Tesselation",
+    "title": "Tessellation",
     "items": [
       "square-regular-translation"
     ]

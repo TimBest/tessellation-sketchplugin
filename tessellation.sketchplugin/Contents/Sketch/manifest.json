@@ -16,18 +16,18 @@
           "SelectionChanged.begin": "onActionHandler"
         }
       },
-      "indentifier": "my-action-listenr-identifier"
+      "indentifier": "my-action-listener"
     }
   ],
   "menu": {
-    "title": "Tesselation",
+    "title": "Tessellation",
     "items": [
       "square-regular-translation"
     ]
   },
   "version": "0.1.0",
-  "name": "my-plugin",
-  "identifier": "my-plugin",
+  "name": "tessellation",
+  "identifier": "tessellation",
   "disableCocoaScriptPreprocessor": true,
   "appcast": "https://raw.githubusercontent.com//master/.appcast.xml",
   "author": "Tim",

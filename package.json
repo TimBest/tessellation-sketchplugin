@@ -1,13 +1,13 @@
 {
-  "name": "my-plugin",
+  "name": "tessellation",
   "version": "0.1.0",
   "engines": {
     "sketch": ">=3.0"
   },
   "skpm": {
-    "name": "my-plugin",
+    "name": "tessellation",
     "manifest": "src/manifest.json",
-    "main": "my-plugin.sketchplugin",
+    "main": "tessellation.sketchplugin",
     "assets": [
       "assets/**/*"
     ]

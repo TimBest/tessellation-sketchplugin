@@ -102,72 +102,69 @@ var exports =
 __webpack_require__.r(__webpack_exports__);
 var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
-var Document = __webpack_require__(/*! sketch/dom */ "sketch/dom").Document;
+var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
-var Shape = __webpack_require__(/*! sketch/dom */ "sketch/dom").Shape;
+var Utils = __webpack_require__(/*! ./utils */ "./src/utils.js");
 
-var Rectangle = __webpack_require__(/*! sketch/dom */ "sketch/dom").Rectangle; // also exposed on Document
-// function getSelectedArtboards() {
-//   var document = Document.getSelectedDocument();
-//   var page = document.selectedPage;
-//   var selectedLayers = document.selectedLayers;
-//   var selectedCount = selectedLayers.length;
-//
-//   if (selectedCount === 0) {
-//     return [];
-//   }
-//
-//   var artboards = [];
-//   selectedLayers.forEach(function(layer) {
-//     if (layer.type === "Artboard") {
-//       artboards.push(layer);
-//     }
-//   });
-//   return artboards;
-// }
-// var artboards = getSelectedArtboards();
-//
-// if (artboards.length === 0) {
-//   UI.message('No Artboard selected');
-//   return;
-// }
-//
-// if (artboards.length > 1) {
-//   UI.message('Too many Artboards selected. Select a single Artboard');
-//   return;
-// }
-//
-// var artboard = artboards[0];
-
-
-/* harmony default export */ __webpack_exports__["default"] = (function () {
-  var document = Document.getSelectedDocument();
-  var page = document.selectedPage;
-  var frame = new Rectangle(0, 0, 100, 100);
-  var shape = new Shape({
-    name: 'my shape',
-    frame: frame,
-    style: {
-      fills: ['#5F5BC2']
-    }
+function squarePath() {
+  var name = 'testName';
+  var svgPath = "M0,0L100 0 100 100 0 100z";
+  Settings.setSettingForKey('tesselations', {
+    svgPath: svgPath,
+    name: name
   });
-  UI.message(shape.id);
-  var pageLayers = page.layers.map(function (item) {
-    return item.sketchObject;
+  var bezierPath = Utils.svgPathToBezierPath(svgPath).path;
+  var shape = MSShapeGroup.shapeWithBezierPath(bezierPath);
+  shape.setName(name); // `0` constant indicates that we need a `fill` part to be created
+
+  var fill = shape.style().addStylePartOfType(0);
+  fill.color = MSColor.colorWithRGBADictionary({
+    r: 0.8,
+    g: 0.1,
+    b: 0.1,
+    a: 1
   });
-  page.layers = pageLayers.concat(shape);
+  return shape;
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (function (context) {
+  var shape = squarePath();
+  var documentData = context.document.documentData();
+  var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage();
+  currentParentGroup.addLayers([shape]);
 });
 
 /***/ }),
 
-/***/ "sketch/dom":
-/*!*****************************!*\
-  !*** external "sketch/dom" ***!
-  \*****************************/
+/***/ "./src/utils.js":
+/*!**********************!*\
+  !*** ./src/utils.js ***!
+  \**********************/
+/*! exports provided: svgPathToBezierPath */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "svgPathToBezierPath", function() { return svgPathToBezierPath; });
+function svgPathToBezierPath(svgPath) {
+  var isClosedPtr = MOPointer.alloc().init();
+  var path = SVGPathInterpreter.bezierPathFromCommands_isPathClosed(svgPath, isClosedPtr);
+  return {
+    path: path,
+    isClosed: isClosedPtr.value()
+  };
+}
+
+/***/ }),
+
+/***/ "sketch/settings":
+/*!**********************************!*\
+  !*** external "sketch/settings" ***!
+  \**********************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("sketch/dom");
+module.exports = require("sketch/settings");
 
 /***/ }),
 

@@ -103,21 +103,26 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onActionHandler", function() { return onActionHandler; });
 var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
-var Document = __webpack_require__(/*! sketch/dom */ "sketch/dom").Document;
+var Utils = __webpack_require__(/*! ./utils */ "./src/utils.js");
+
+var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
 function onActionHandler(context) {
-  // UI.alert("title", context);
   var oldSelection = context.actionContext.oldSelection;
   var name = oldSelection[0].name();
 
-  if (name != 'my shape') {
-    UI.message("object ".concat(name, " not named my shape"));
+  if (name != 'testName') {
+    // if name is in -> Settings.settingForKey('tesselations')
     return;
-  }
+  } // var triangle = Utils.svgPathToBezierPath("M0,0L90 100 0 100z").path;
+  // oldSelection[0].setName('trianlge');
 
-  var document = Document.getSelectedDocument();
-  var layers = document.getLayersNamed(name);
-  UI.alert("layers", layers[0].style.LineEnd); // UI.alert("layers", layers[0].name)
+
+  var path = oldSelection[0].bezierPath().svgPathAttribute();
+  UI.alert("title", Settings.settingForKey('tesselations')); // UI.alert("title", shape);
+  // var document = Document.getSelectedDocument();
+  // var layers = document.getLayersNamed(name);
+  // UI.alert("layers", layers[0]);
   // check if layers is length 1 and that selection is a tesselation layer
   // upldae layer with changes so that it can tessellate
   // context.actionContext.document.showMessage('edit?')
@@ -125,14 +130,35 @@ function onActionHandler(context) {
 
 /***/ }),
 
-/***/ "sketch/dom":
-/*!*****************************!*\
-  !*** external "sketch/dom" ***!
-  \*****************************/
+/***/ "./src/utils.js":
+/*!**********************!*\
+  !*** ./src/utils.js ***!
+  \**********************/
+/*! exports provided: svgPathToBezierPath */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "svgPathToBezierPath", function() { return svgPathToBezierPath; });
+function svgPathToBezierPath(svgPath) {
+  var isClosedPtr = MOPointer.alloc().init();
+  var path = SVGPathInterpreter.bezierPathFromCommands_isPathClosed(svgPath, isClosedPtr);
+  return {
+    path: path,
+    isClosed: isClosedPtr.value()
+  };
+}
+
+/***/ }),
+
+/***/ "sketch/settings":
+/*!**********************************!*\
+  !*** external "sketch/settings" ***!
+  \**********************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("sketch/dom");
+module.exports = require("sketch/settings");
 
 /***/ }),
 

@@ -1,61 +1,29 @@
 var UI = require('sketch/ui');
-var Document = require('sketch/dom').Document;
-var Shape = require('sketch/dom').Shape;
-var Rectangle = require('sketch/dom').Rectangle;
-
-// also exposed on Document
-
-// function getSelectedArtboards() {
-//   var document = Document.getSelectedDocument();
-//   var page = document.selectedPage;
-//   var selectedLayers = document.selectedLayers;
-//   var selectedCount = selectedLayers.length;
-//
-//   if (selectedCount === 0) {
-//     return [];
-//   }
-//
-//   var artboards = [];
-//   selectedLayers.forEach(function(layer) {
-//     if (layer.type === "Artboard") {
-//       artboards.push(layer);
-//     }
-//   });
-//   return artboards;
-// }
-// var artboards = getSelectedArtboards();
-//
-// if (artboards.length === 0) {
-//   UI.message('No Artboard selected');
-//   return;
-// }
-//
-// if (artboards.length > 1) {
-//   UI.message('Too many Artboards selected. Select a single Artboard');
-//   return;
-// }
-//
-// var artboard = artboards[0];
-
-export default function() {
-  var document = Document.getSelectedDocument();
-  var page = document.selectedPage;
-
-  var frame = new Rectangle(0, 0, 100, 100);
-  var shape = new Shape({
-    name: 'my shape',
-    frame: frame,
-    style: {
-      fills: ['#5F5BC2']
-    }
-  });
-  UI.message(shape.id);
-
-  var pageLayers = page.layers.map(function(item) {
-    return item.sketchObject;
-  });
-
-  page.layers = pageLayers.concat(shape);
+var Settings = require('sketch/settings');
+var Utils = require('./utils');
 
 
+function squarePath() {
+  var name = 'testName';
+  var svgPath = "M0,0L100 0 100 100 0 100z";
+  Settings.setSettingForKey(
+    'tesselations',
+    {svgPath, name}
+  );
+
+  var bezierPath = Utils.svgPathToBezierPath(svgPath).path;
+  var shape = MSShapeGroup.shapeWithBezierPath(bezierPath);
+  shape.setName(name);
+  // `0` constant indicates that we need a `fill` part to be created
+  var fill = shape.style().addStylePartOfType(0);
+  fill.color = MSColor.colorWithRGBADictionary({r: 0.8, g: 0.1, b: 0.1, a: 1});
+  return shape;
+}
+
+export default function(context) {
+  var shape = squarePath();
+  var documentData = context.document.documentData();
+  var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage();
+
+  currentParentGroup.addLayers([shape]);
 }
