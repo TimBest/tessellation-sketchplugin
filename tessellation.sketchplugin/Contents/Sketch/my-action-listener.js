@@ -2303,7 +2303,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tessellate", function() { return tessellate; });
 var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
-var parseSVG = __webpack_require__(/*! svg-path-parser */ "./node_modules/svg-path-parser/index.js"); // M200,200 L300,200 L300,300 L200,300 L200,200 Z
+var _require = __webpack_require__(/*! svg-path-parser */ "./node_modules/svg-path-parser/index.js"),
+    parseSVG = _require.parseSVG,
+    makeAbsolute = _require.makeAbsolute; // M200,200 L300,200 L300,300 L200,300 L200,200 Z
 // TODO: calculate corners using bounding box
 
 
@@ -2323,9 +2325,15 @@ var corner4 = {
   x: 200,
   y: 300
 };
+/*
+originalPath: string; previous path data for svg
+newPath: string; new path data for svg
+
+return: {edge1: [], edge2: [], edge3: [], edge4: []}; edge arrays are in PEG.js svg grammer
+*/
 
 function pathToEdges(path) {
-  var parsedPath = parseSVG(path); // get corner indices
+  var parsedPath = makeAbsolute(parseSVG(path)); // get corner indices
 
   var corner1Index = -1;
   var corner2Index = -1;
@@ -2359,64 +2367,46 @@ function pathToEdges(path) {
     edge3: edge3,
     edge4: edge4
   };
-} // edges =     (
-//             {
-//         code = M;
-//         command = moveto;
-//         x = 200;
-//         y = 200;
-//     },
-//             {
-//         code = C;
-//         command = curveto;
-//         x = 250;
-//         x1 = "216.666667";
-//         x2 = "233.333333";
-//         y = "214.402344";
-//         y1 = "209.601562";
-//         y2 = "214.402344";
-//     },
-//             {
-//         code = C;
-//         command = curveto;
-//         x = 300;
-//         x1 = "266.666667";
-//         x2 = "283.333333";
-//         y = 200;
-//         y1 = "214.402344";
-//         y2 = "209.601562";
-//     },
-//             {
-//         code = L;
-//         command = lineto;
-//         x = 300;
-//         y = 300;
-//     },
-//             {
-//         code = L;
-//         command = lineto;
-//         x = 200;
-//         y = 300;
-//     },
-//             {
-//         code = L;
-//         command = lineto;
-//         x = 200;
-//         y = 200;
-//     },
-//             {
-//         code = Z;
-//         command = closepath;
-//     }
-// );
+}
+/*
+edgeA: []; elements in array PEG.js svg grammer
+edgeB: []; elements in array PEG.js svg grammer
+
+return: bool
+*/
 
 
-function getChangedEdge(originalPath, editedPath) {
-  var editedEdges = pathToEdges(editedPath);
-  var originalEdges = pathToEdges(originalPath);
-  UI.alert('new edges', {
-    editedEdges: editedEdges
-  }); // UI.alert('new edges', {editedEdges, originalEdges});
+function areEdgesDifferent(edgeA, edgeB) {
+  if (edgeA.length < 2 || edgeB.length < 2) {
+    UI.message('Error: Edge length incorrect');
+  }
+
+  if (edgeA.length != edgeB.length) {
+    return true;
+  }
+
+  var lastElementIndex = edgeA.length - 1; // compare ending point of the first element
+
+  if (edgeA[0].x != edgeB[0].x || edgeA[0].y != edgeB[0].y) {
+    return true;
+  }
+
+  if (edgeA.length > 2) {
+    // compare middle elements
+    var middleA = edgeA.slice(1, lastElementIndex - 1);
+    var middleB = edgeB.slice(1, lastElementIndex - 1);
+
+    if (JSON.stringify(middleA) != JSON.stringify(middleB)) {
+      return true;
+    }
+  } // compare last point
+
+
+  if (edgeA[lastElementIndex].x != edgeB[lastElementIndex].x || edgeA[lastElementIndex].y != edgeB[lastElementIndex].y) {
+    return true;
+  }
+
+  return false;
 }
 /*
 originalPath: string; previous path data for svg
@@ -2427,7 +2417,29 @@ return: string; tessellate path data for svg
 
 
 function tessellate(originalPath, editedPath) {
-  var editedSide = getChangedEdge(originalPath, editedPath);
+  var editedEdges = pathToEdges(editedPath);
+  var originalEdges = pathToEdges(originalPath);
+  var isEdge1Different = areEdgesDifferent(editedEdges.edge1, originalEdges.edge1);
+  var isEdge2Different = areEdgesDifferent(editedEdges.edge2, originalEdges.edge2);
+  var isEdge3Different = areEdgesDifferent(editedEdges.edge3, originalEdges.edge3);
+  var isEdge4Different = areEdgesDifferent(editedEdges.edge4, originalEdges.edge4);
+
+  if (isEdge1Different) {// copy and translate 1 to 3
+  } else if (isEdge3Different) {// copy and translate 3 to 1
+  }
+
+  if (isEdge2Different) {// copy and translate 2 to 4
+  } else if (isEdge4Different) {// copy and translate 4 to 2
+  }
+
+  UI.alert('new edges', {
+    isEdge1Different: isEdge1Different,
+    isEdge2Different: isEdge2Different,
+    isEdge3Different: isEdge3Different,
+    isEdge4Different: isEdge4Different
+  }); // UI.alert('new edges', {editedEdges});
+
+  return editedPath;
 }
 
 /***/ }),
