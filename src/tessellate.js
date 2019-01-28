@@ -100,16 +100,18 @@ export function tessellate(originalPath, editedPath) {
   var isEdge4Different = areEdgesDifferent(editedEdges.edge4, originalEdges.edge4);
 
   if (isEdge1Different) {
-    // copy and translate 1 to 3
+    // TODO copy and translate 1 to 3
   } else if (isEdge3Different) {
-    // copy and translate 3 to 1
+    // TODO copy and translate 3 to 1
   }
 
   if (isEdge2Different) {
-    // copy and translate 2 to 4
+    // TODO copy and translate 2 to 4
   } else if (isEdge4Different) {
-    // copy and translate 4 to 2
+    // TODO copy and translate 4 to 2
   }
+
+  // TODO convert parsed path to real svg path
 
   UI.alert('new edges', {isEdge1Different, isEdge2Different, isEdge3Different, isEdge4Different});
   // UI.alert('new edges', {editedEdges});

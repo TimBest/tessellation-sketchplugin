@@ -1,0 +1,15 @@
+# in actions
+- insert path from tessellate
+- delete old selection
+
+# in tessellate
+- mutate opposite paths to ones changed
+- convert parsed svg object back into svg path (should probably add that to `svg-path-parser`) 
+
+
+Run these commands:
+defaults write ~/Library/Preferences/com.bohemiancoding.sketch3.plist actionWildcardsAllowed -bool NO
+defaults write ~/Library/Preferences/com.bohemiancoding.sketch3.plist AlwaysReloadScript -bool NO
+
+try and figure out how to a layer with path in my action listener
+https://github.com/turbobabr/Sketch-Plugins-Cookbook#11-creating-custom-shapes

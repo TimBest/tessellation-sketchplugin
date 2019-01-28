@@ -2424,13 +2424,14 @@ function tessellate(originalPath, editedPath) {
   var isEdge3Different = areEdgesDifferent(editedEdges.edge3, originalEdges.edge3);
   var isEdge4Different = areEdgesDifferent(editedEdges.edge4, originalEdges.edge4);
 
-  if (isEdge1Different) {// copy and translate 1 to 3
-  } else if (isEdge3Different) {// copy and translate 3 to 1
+  if (isEdge1Different) {// TODO copy and translate 1 to 3
+  } else if (isEdge3Different) {// TODO copy and translate 3 to 1
   }
 
-  if (isEdge2Different) {// copy and translate 2 to 4
-  } else if (isEdge4Different) {// copy and translate 4 to 2
-  }
+  if (isEdge2Different) {// TODO copy and translate 2 to 4
+  } else if (isEdge4Different) {} // TODO copy and translate 4 to 2
+  // TODO convert parsed path to real svg path
+
 
   UI.alert('new edges', {
     isEdge1Different: isEdge1Different,
