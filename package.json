@@ -21,5 +21,8 @@
   "devDependencies": {
     "@skpm/builder": "^0.5.11"
   },
-  "author": "Tim <hello@timbest.net>"
+  "author": "Tim <hello@timbest.net>",
+  "dependencies": {
+    "svg-path-parser": "^1.1.0"
+  }
 }
