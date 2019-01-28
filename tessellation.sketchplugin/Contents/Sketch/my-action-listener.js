@@ -107,6 +107,22 @@ var Utils = __webpack_require__(/*! ./utils */ "./src/utils.js");
 
 var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
+var Tessellate = __webpack_require__(/*! ./tessellate */ "./src/tessellate.js");
+/*
+pathAttribute: string; valid svg attribute
+returns: string; value of svg attribute
+
+example:
+getSvgPathAttributeValue(d="M 10,10 L 90,90 V 10 H 50") -> "M 10,10 L 90,90 V 10 H 50"
+*/
+
+
+function getSvgPathAttributeValue(path) {
+  var start = path.indexOf('"') + 1;
+  var end = path.indexOf('"', start);
+  return path.substring(start, end);
+}
+
 function MSRectToSVGCommands(rect) {
   var x = rect.x();
   var y = rect.y();
@@ -136,30 +152,79 @@ function onActionHandler(context) {
   var name = oldSelection[0].name();
 
   if (name != 'testName') {
-    // if name is in -> Settings.settingForKey('tesselations')
-    return;
-  } // var triangle = Utils.svgPathToBezierPath("M0,0L90 100 0 100z").path;
-  // oldSelection[0].setName('trianlge');
-
-
-  var newPath = oldSelection[0].bezierPath().svgPathAttribute();
-  var oldPath = Settings.settingForKey('tesselations').path;
-
-  if (newPath == oldPath) {
+    // ignore shape if it is not
     return;
   }
 
-  var boundingBox = MSRectToSVGCommands(oldSelection[0].frame());
-  var currentParentGroup = Utils.getParentGroup(context.actionContext.document); // removeLayer
+  var editedPath = getSvgPathAttributeValue(oldSelection[0].bezierPath().svgPathAttribute().toString());
+  var originalPath = Settings.settingForKey('tesselations').path;
 
-  currentParentGroup.addLayers([squarePath(boundingBox)]);
-  currentParentGroup.removeLayer(oldPath[0]); // UI.alert("title", shape);
-  // var document = Document.getSelectedDocument();
-  // var layers = document.getLayersNamed(name);
-  // UI.alert("layers", layers[0]);
-  // check if layers is length 1 and that selection is a tesselation layer
-  // upldae layer with changes so that it can tessellate
-  // context.actionContext.document.showMessage('edit?')
+  if (editedPath == originalPath) {
+    return;
+  }
+
+  var newPath = Tessellate.tessellate(originalPath, editedPath); // TODO: delete old slection
+  // TODO: insert new path
+  // var boundingBox = MSRectToSVGCommands(oldSelection[0].frame());
+  //
+  // var currentParentGroup = Utils.getParentGroup(context.actionContext.document);
+  // currentParentGroup.addLayers([squarePath(boundingBox)]);
+  // currentParentGroup.removeLayer(oldPath[0]);
+}
+
+/***/ }),
+
+/***/ "./src/tessellate.js":
+/*!***************************!*\
+  !*** ./src/tessellate.js ***!
+  \***************************/
+/*! exports provided: tessellate */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tessellate", function() { return tessellate; });
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui"); // M200,200 L300,200 L300,300 L200,300 L200,200 Z
+// TODO: calculate corners using bounding box
+
+
+var corner1 = '200,200';
+var corner2 = '300,200';
+var corner3 = '300,300';
+var corner4 = '200,300';
+
+function pathToEdges(path) {
+  var corner1Index = path.indexOf(corner1);
+  var corner2Index = path.indexOf(corner2);
+  var corner3Index = path.indexOf(corner3);
+  var corner4Index = path.indexOf(corner4);
+  var edge1 = path.substring(corner1Index, corner2Index + corner2.length);
+  var edge2 = path.substring(corner2Index, corner3Index + corner3.length);
+  var edge3 = path.substring(corner3Index, corner4Index + corner4.length);
+  var edge4 = path.substring(corner4Index, path.length - 2);
+  return {
+    edge1: edge1,
+    edge2: edge2,
+    edge3: edge3,
+    edge4: edge4
+  };
+}
+
+function getChangedEdge(originalPath, editedPath) {
+  var editedEdges = pathToEdges(editedPath);
+  var originalEdges = pathToEdges(originalPath);
+  UI.alert('new edges', editedEdges); // UI.alert('new edges', {editedEdges, originalEdges});
+}
+/*
+originalPath: string; previous path data for svg
+newPath: string; new path data for svg
+
+return: string; tessellate path data for svg
+*/
+
+
+function tessellate(originalPath, editedPath) {
+  var editedSide = getChangedEdge(originalPath, editedPath);
 }
 
 /***/ }),

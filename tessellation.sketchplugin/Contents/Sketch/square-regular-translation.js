@@ -108,7 +108,7 @@ var Utils = __webpack_require__(/*! ./utils */ "./src/utils.js");
 
 function squarePath() {
   var name = 'testName';
-  var svgPath = "M0,0L100 0 100 100 0 100z";
+  var svgPath = "M200,200 L300,200 L300,300 L200,300 L200,200 Z";
   Settings.setSettingForKey('tesselations', {
     name: name,
     path: svgPath

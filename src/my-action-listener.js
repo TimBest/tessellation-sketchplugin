@@ -1,6 +1,20 @@
 var UI = require('sketch/ui');
 var Utils = require('./utils');
 var Settings = require('sketch/settings');
+var Tessellate = require('./tessellate');
+
+/*
+pathAttribute: string; valid svg attribute
+returns: string; value of svg attribute
+
+example:
+getSvgPathAttributeValue(d="M 10,10 L 90,90 V 10 H 50") -> "M 10,10 L 90,90 V 10 H 50"
+*/
+function getSvgPathAttributeValue(path) {
+  var start = path.indexOf('"') + 1;
+  var end = path.indexOf('"', start);
+  return path.substring(start, end);
+}
 
 function MSRectToSVGCommands(rect) {
   var x = rect.x();
@@ -28,18 +42,26 @@ export function onActionHandler(context) {
   var name = oldSelection[0].name();
 
   if (name != 'testName') {
-    // if name is in -> Settings.settingForKey('tesselations')
+    // ignore shape if it is not
     return;
   }
 
-   var newPath = oldSelection[0].bezierPath().svgPathAttribute();
-   var oldPath = Settings.settingForKey('tesselations').path;
-   if (newPath == oldPath) {
+   var editedPath = getSvgPathAttributeValue(
+     oldSelection[0].bezierPath().svgPathAttribute().toString()
+   );
+   var originalPath = Settings.settingForKey('tesselations').path;
+
+   if (editedPath == originalPath) {
      return;
    }
-   var boundingBox = MSRectToSVGCommands(oldSelection[0].frame());
+   var newPath = Tessellate.tessellate(originalPath, editedPath);
+   // TODO: delete old slection
+   // TODO: insert new path
 
-   var currentParentGroup = Utils.getParentGroup(context.actionContext.document);
-   currentParentGroup.addLayers([squarePath(boundingBox)]);
+
+   // var boundingBox = MSRectToSVGCommands(oldSelection[0].frame());
+   //
+   // var currentParentGroup = Utils.getParentGroup(context.actionContext.document);
+   // currentParentGroup.addLayers([squarePath(boundingBox)]);
    // currentParentGroup.removeLayer(oldPath[0]);
 }
